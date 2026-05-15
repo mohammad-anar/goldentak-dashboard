@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/v1",
+    baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1",
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("token");
       if (token) {
@@ -12,6 +12,6 @@ export const baseApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Race", "Horse", "Algorithm", "User", "Notification", "Sync"],
+  tagTypes: ["Race", "Horse", "Algorithm", "User", "Notification", "Sync", "Subscription"],
   endpoints: () => ({}),
 });

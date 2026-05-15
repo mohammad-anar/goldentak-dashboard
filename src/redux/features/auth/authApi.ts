@@ -37,6 +37,13 @@ export const authApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    getUsers: builder.query({
+      query: (params) => ({
+        url: "/auth/users",
+        params,
+      }),
+      providesTags: ["User"],
+    }),
   }),
 });
 
@@ -45,5 +52,7 @@ export const {
   useForgotPasswordMutation,
   useVerifyOtpMutation,
   useResetPasswordMutation,
-  useChangePasswordMutation
+  useChangePasswordMutation,
+  useGetUsersQuery
 } = authApi;
+

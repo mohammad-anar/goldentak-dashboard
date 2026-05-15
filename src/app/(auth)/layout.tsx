@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import Image from "next/image";
 import authImage from "@/assets/auth_page_image.png";
 import logo from "@/assets/logo.png";
@@ -20,7 +20,9 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
               priority
             />
           </div>
-          {children}
+          <Suspense fallback={<div>Loading...</div>}>
+            {children}
+          </Suspense>
         </div>
       </div>
 

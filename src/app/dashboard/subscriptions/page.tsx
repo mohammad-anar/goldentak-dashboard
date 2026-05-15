@@ -104,7 +104,7 @@ export default function SubscriptionsPage() {
   return (
     <div className="flex flex-col gap-8 py-8 md:py-10 px-4 lg:px-6">
       {/* Title */}
-      <h1 className="text-3xl font-bold text-gray-900">Subscription Management</h1>
+      <h1 className="text-3xl font-bold text-gray-900">Subscription Overview</h1>
 
       {/* Metrics Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

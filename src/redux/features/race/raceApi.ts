@@ -17,11 +17,20 @@ export const raceApi = baseApi.injectEndpoints({
       query: (id) => `/race/${id}/calculate`,
       invalidatesTags: (result, error, id) => [{ type: "Race", id }, "Race"],
     }),
+    syncRaces: builder.mutation({
+      query: () => ({
+        url: "/system/sync",
+        method: "POST",
+      }),
+      invalidatesTags: ["Race"],
+    }),
   }),
 });
 
 export const { 
   useGetRacesQuery, 
   useGetRaceByIdQuery, 
-  useCalculateRaceScoresMutation 
+  useCalculateRaceScoresMutation,
+  useSyncRacesMutation
 } = raceApi;
+
