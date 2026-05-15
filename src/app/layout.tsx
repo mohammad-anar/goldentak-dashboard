@@ -14,9 +14,10 @@ const geistMono = Geist_Mono({
 
 
 export const metadata: Metadata = {
-  title: 'K10 Football - AI-Powered Football Network',
-  description: 'The world\'s first validated football network connecting players, coaches, and clubs through verified achievements and AI-powered matching',
+  title: 'Which-win - Horse Race AI Analysis App',
+  description: 'AI-powered horse racing analysis platform providing professional insights and performance metrics.',
   generator: 'v0.app',
+
   icons: {
     icon: [
       {
