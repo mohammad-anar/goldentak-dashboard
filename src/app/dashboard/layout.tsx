@@ -1,26 +1,23 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ReactNode } from "react";
+
 const CommonLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <>
-      {" "}
-      <SidebarProvider
-        style={
-          {
-            "--sidebar-width": "calc(var(--spacing) * 60)",
-            "--header-height": "calc(var(--spacing) * 15)",
-          } as React.CSSProperties
-        }
-      >
-        <AppSidebar variant="inset" />
-        <SidebarInset>
-          <SiteHeader />
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "300px",
+        } as React.CSSProperties
+      }
+    >
+      <AppSidebar />
+      <SidebarInset className="bg-[#f8f9fa]">
+        <main className="flex-1 overflow-y-auto">
           {children}
-        </SidebarInset>
-      </SidebarProvider>
-    </>
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 };
 

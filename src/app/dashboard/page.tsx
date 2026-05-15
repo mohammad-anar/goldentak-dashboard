@@ -1,25 +1,37 @@
-import { ChartAreaInteractive } from "@/components/chart-area-interactive";
-import { DataTable } from "@/components/data-table";
-import { SectionCards } from "@/components/section-cards";
+import { OverviewMetrics } from "@/components/dashboard/overview-metrics";
+import { UserGrowthChart } from "@/components/dashboard/user-growth-chart";
+import { PlatformDistributionChart } from "@/components/dashboard/platform-distribution-chart";
+import { SubscriptionStatusChart } from "@/components/dashboard/subscription-status-chart";
+import { UserActivityChart } from "@/components/dashboard/user-activity-chart";
 
-import data from "./data.json";
-
-const page = () => {
+const DashboardPage = () => {
   return (
-    <>
-      <div className="flex flex-1 flex-col">
-        <div className="@container/main flex flex-1 flex-col gap-2">
-          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-            <SectionCards />
-            <div className="px-4 lg:px-6">
-              <ChartAreaInteractive />
-            </div>
-            <DataTable data={data} />
-          </div>
+    <div className="flex flex-col gap-8 py-8 md:py-10">
+      {/* Title */}
+      <div className="px-4 lg:px-6">
+        <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+      </div>
+
+      {/* Metrics Section */}
+      <OverviewMetrics />
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4 lg:px-6">
+        <div className="h-[450px]">
+          <UserGrowthChart />
+        </div>
+        <div className="h-[450px]">
+          <PlatformDistributionChart />
+        </div>
+        <div className="h-[450px]">
+          <SubscriptionStatusChart />
+        </div>
+        <div className="h-[450px]">
+          <UserActivityChart />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default page;
+export default DashboardPage;

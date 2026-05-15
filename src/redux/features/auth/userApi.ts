@@ -1,0 +1,28 @@
+import { baseApi } from "../api/baseApi";
+
+export const userApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    getUsers: builder.query({
+      query: () => "/auth/users",
+      providesTags: ["User"],
+    }),
+    getStats: builder.query({
+      query: () => "/auth/stats",
+      providesTags: ["User"],
+    }),
+    updateSubscription: builder.mutation({
+      query: (data) => ({
+        url: "/auth/purchase-subscription",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["User"],
+    }),
+  }),
+});
+
+export const { 
+  useGetUsersQuery, 
+  useGetStatsQuery,
+  useUpdateSubscriptionMutation 
+} = userApi;

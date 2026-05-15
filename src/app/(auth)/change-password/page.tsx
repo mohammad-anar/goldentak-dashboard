@@ -1,10 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, Lock } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { useChangePasswordMutation } from "@/redux/features/auth/authApi";
+import { toast } from "sonner";
 
 interface ChangePasswordForm {
   currentPassword: string;
@@ -13,6 +16,8 @@ interface ChangePasswordForm {
 }
 
 export default function ChangePasswordPage() {
+  const router = useRouter();
+  const [changePassword, { isLoading }] = useChangePasswordMutation();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -32,37 +37,38 @@ export default function ChangePasswordPage() {
 
   const newPassword = watch("newPassword");
 
-  const onSubmit = (data: ChangePasswordForm) => {
-    console.log("Change password submitted:", data);
+  const onSubmit = async (data: ChangePasswordForm) => {
+    try {
+      await changePassword({ 
+        oldPassword: data.currentPassword, 
+        newPassword: data.newPassword 
+      }).unwrap();
+      toast.success("Password updated successfully");
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to update password");
+    }
   };
 
   return (
-    <div className="w-full max-w-md px-8">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-foreground mb-4">
+    <div className="w-full">
+      <div className="mb-10">
+        <h1 className="text-3xl font-medium text-white mb-3">
           Change Password
         </h1>
-        <p className="text-foreground/60 text-sm leading-relaxed">
+        <p className="text-auth-text-gray text-[15px]">
           Update your password to keep your account secure.
         </p>
       </div>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Current Password Field */}
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
+        <div className="space-y-2.5">
+          <label className="block text-[15px] font-normal text-white">
             Current Password
           </label>
           <div className="relative">
-            <Lock
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-ring"
-              size={20}
-            />
             <input
               type={showCurrentPassword ? "text" : "password"}
-              placeholder="enter your current password"
+              placeholder="Enter your current password"
               {...register("currentPassword", {
                 required: "Current password is required",
                 minLength: {
@@ -70,115 +76,100 @@ export default function ChangePasswordPage() {
                   message: "Password must be at least 8 characters",
                 },
               })}
-              className="w-full pl-10 pr-10 py-3 rounded-lg border border-border bg-input/30 focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-foreground/40"
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-800 bg-auth-input-bg text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-auth-primary transition-all"
             />
             <button
               type="button"
               onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-ring hover:text-foreground/60"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
             >
               {showCurrentPassword ? <Eye size={20} /> : <EyeOff size={20} />}
             </button>
           </div>
           {errors.currentPassword && (
-            <p className="text-destructive text-xs mt-1">
+            <p className="text-red-500 text-xs mt-1">
               {errors.currentPassword.message}
             </p>
           )}
         </div>
 
-        {/* New Password Field */}
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
+        <div className="space-y-2.5">
+          <label className="block text-[15px] font-normal text-white">
             New Password
           </label>
           <div className="relative">
-            <Lock
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-ring"
-              size={20}
-            />
             <input
               type={showNewPassword ? "text" : "password"}
-              placeholder="enter your new password"
+              placeholder="Enter your new password"
               {...register("newPassword", {
                 required: "New password is required",
                 minLength: {
                   value: 8,
                   message: "Password must be at least 8 characters",
                 },
-                validate: (value) =>
-                  value !== watch("currentPassword") ||
-                  "New password must be different from current password",
               })}
-              className="w-full pl-10 pr-10 py-3 rounded-lg border border-border bg-input/30 focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-foreground/40"
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-800 bg-auth-input-bg text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-auth-primary transition-all"
             />
             <button
               type="button"
               onClick={() => setShowNewPassword(!showNewPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-ring hover:text-foreground/60"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
             >
               {showNewPassword ? <Eye size={20} /> : <EyeOff size={20} />}
             </button>
           </div>
           {errors.newPassword && (
-            <p className="text-destructive text-xs mt-1">
+            <p className="text-red-500 text-xs mt-1">
               {errors.newPassword.message}
             </p>
           )}
         </div>
 
-        {/* Confirm Password Field */}
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
+        <div className="space-y-2.5">
+          <label className="block text-[15px] font-normal text-white">
             Confirm Password
           </label>
           <div className="relative">
-            <Lock
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-ring"
-              size={20}
-            />
             <input
               type={showConfirmPassword ? "text" : "password"}
-              placeholder="confirm your new password"
+              placeholder="Confirm your new password"
               {...register("confirmPassword", {
                 required: "Confirm password is required",
                 validate: (value) =>
                   value === newPassword || "Passwords do not match",
               })}
-              className="w-full pl-10 pr-10 py-3 rounded-lg border border-border bg-input/30 focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-foreground/40"
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-800 bg-auth-input-bg text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-auth-primary transition-all"
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-ring hover:text-foreground/60"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
             >
               {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="text-destructive text-xs mt-1">
+            <p className="text-red-500 text-xs mt-1">
               {errors.confirmPassword.message}
             </p>
           )}
         </div>
 
-        {/* Update Button */}
         <Button
           type="submit"
-          className="w-full !bg-my-primary text-white hover:!bg-my-primary/90"
-          size="lg"
+          disabled={isLoading}
+          className="w-full py-7 rounded-xl font-semibold text-white text-lg bg-auth-primary hover:bg-auth-primary/90 cursor-pointer transition-all border-none"
         >
-          Update Password
+          {isLoading ? "Updating..." : "Update Password"}
         </Button>
       </form>
 
-      {/* Back Link */}
-      <div className="text-center mt-6">
+      <div className="mt-8">
         <Link
-          href="/"
-          className="text-my-green text-sm font-medium hover:underline"
+          href="/login"
+          className="text-blue-900 text-sm font-medium hover:text-blue-800 transition-colors"
         >
-          Back to home
+          Back to login
         </Link>
       </div>
     </div>
