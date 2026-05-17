@@ -75,80 +75,92 @@ export default function RaceDetailsPage() {
 
       {/* Main Analysis List */}
       <div className="space-y-4">
-        {entries.map((entry: any, index: number) => (
-          <Card key={entry.id} className="border-none shadow-sm rounded-2xl overflow-hidden hover:ring-2 hover:ring-blue-100 transition-all">
-            <CardContent className="p-0">
-              <div className="flex flex-col md:flex-row">
-                {/* Ranking Section */}
-                <div className={`w-full md:w-24 flex flex-col items-center justify-center py-6 border-b md:border-b-0 md:border-r border-gray-50 ${
-                  entry.rank === 1 ? 'bg-amber-50' : 
-                  entry.rank === 2 ? 'bg-slate-50' : 
-                  entry.rank === 3 ? 'bg-orange-50' : 'bg-gray-50/30'
-                }`}>
-                  <span className={`text-3xl font-black ${
-                    entry.rank === 1 ? 'text-amber-600' : 
-                    entry.rank === 2 ? 'text-slate-400' : 
-                    entry.rank === 3 ? 'text-orange-400' : 'text-gray-300'
+        {entries.length > 0 ? (
+          entries.map((entry: any, index: number) => (
+            <Card key={entry.id} className="border-none shadow-sm rounded-2xl overflow-hidden hover:ring-2 hover:ring-blue-100 transition-all">
+              <CardContent className="p-0">
+                <div className="flex flex-col md:flex-row">
+                  {/* Ranking Section */}
+                  <div className={`w-full md:w-24 flex flex-col items-center justify-center py-6 border-b md:border-b-0 md:border-r border-gray-50 ${
+                    entry.rank === 1 ? 'bg-amber-50' : 
+                    entry.rank === 2 ? 'bg-slate-50' : 
+                    entry.rank === 3 ? 'bg-orange-50' : 'bg-gray-50/30'
                   }`}>
-                    {entry.rank || "-"}
-                  </span>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Rank</span>
-                </div>
+                    <span className={`text-3xl font-black ${
+                      entry.rank === 1 ? 'text-amber-600' : 
+                      entry.rank === 2 ? 'text-slate-400' : 
+                      entry.rank === 3 ? 'text-orange-400' : 'text-gray-300'
+                    }`}>
+                      {entry.rank || "-"}
+                    </span>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Rank</span>
+                  </div>
 
-                {/* Content Section */}
-                <div className="flex-1 p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
-                      <Hash className="w-5 h-5 text-gray-400" />
-                    </div>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-3">
-                        <h3 className="font-bold text-xl text-gray-900">{entry.horse?.name}</h3>
-                        <Badge className={`
-                          ${entry.category === 'BIG' ? 'bg-green-100 text-green-600' : 
-                            entry.category === 'MEDIUM' ? 'bg-orange-100 text-orange-600' : 
-                            entry.category === 'SMALL' ? 'bg-blue-100 text-blue-600' : 
-                            'bg-gray-100 text-gray-400'} 
-                          border-none rounded-full px-3 py-0.5 font-bold text-[10px]
-                        `}>
-                          {entry.category || "N/A"}
-                        </Badge>
+                  {/* Content Section */}
+                  <div className="flex-1 p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
+                        <Hash className="w-5 h-5 text-gray-400" />
                       </div>
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
-                        <div className="flex items-center gap-1.5">
-                          <User className="w-3.5 h-3.5 text-gray-400" />
-                          <span>{entry.jockeyName || "Unknown Jockey"}</span>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-3">
+                          <h3 className="font-bold text-xl text-gray-900">{entry.horse?.name}</h3>
+                          <Badge className={`
+                            ${entry.category === 'BIG' ? 'bg-green-100 text-green-600' : 
+                              entry.category === 'MEDIUM' ? 'bg-orange-100 text-orange-600' : 
+                              entry.category === 'SMALL' ? 'bg-blue-100 text-blue-600' : 
+                              'bg-gray-100 text-gray-400'} 
+                            border-none rounded-full px-3 py-0.5 font-bold text-[10px]
+                          `}>
+                            {entry.category || "N/A"}
+                          </Badge>
                         </div>
-                        <div className="flex items-center gap-1.5">
-                          <Weight className="w-3.5 h-3.5 text-gray-400" />
-                          <span>{entry.weight} kg</span>
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
+                          <div className="flex items-center gap-1.5">
+                            <User className="w-3.5 h-3.5 text-gray-400" />
+                            <span>{entry.jockeyName || "Unknown Jockey"}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Weight className="w-3.5 h-3.5 text-gray-400" />
+                            <span>{entry.weight} kg</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Power Metrics */}
+                    <div className="flex items-center gap-6 lg:border-l lg:pl-8 border-gray-100">
+                      <div className="flex flex-col items-center">
+                        <span className="text-xs font-bold text-gray-400 uppercase">H-Power</span>
+                        <span className="text-lg font-bold text-gray-900">{entry.horsePower?.toFixed(1) || "-"}</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <span className="text-xs font-bold text-gray-400 uppercase">J-Power</span>
+                        <span className="text-lg font-bold text-gray-900">{entry.jockeyPower?.toFixed(1) || "-"}</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="p-3 rounded-2xl bg-blue-600 text-white flex flex-col items-center min-w-[80px]">
+                          <span className="text-[10px] font-bold opacity-80 uppercase">Score</span>
+                          <span className="text-2xl font-black">{Math.round(entry.normalizedScore || 0)}</span>
                         </div>
                       </div>
                     </div>
                   </div>
-
-                  {/* Power Metrics */}
-                  <div className="flex items-center gap-6 lg:border-l lg:pl-8 border-gray-100">
-                    <div className="flex flex-col items-center">
-                      <span className="text-xs font-bold text-gray-400 uppercase">H-Power</span>
-                      <span className="text-lg font-bold text-gray-900">{entry.horsePower?.toFixed(1) || "-"}</span>
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <span className="text-xs font-bold text-gray-400 uppercase">J-Power</span>
-                      <span className="text-lg font-bold text-gray-900">{entry.jockeyPower?.toFixed(1) || "-"}</span>
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <div className="p-3 rounded-2xl bg-blue-600 text-white flex flex-col items-center min-w-[80px]">
-                        <span className="text-[10px] font-bold opacity-80 uppercase">Score</span>
-                        <span className="text-2xl font-black">{Math.round(entry.normalizedScore || 0)}</span>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <div className="py-20 text-center space-y-4 bg-white rounded-2xl shadow-sm">
+            <div className="p-4 bg-gray-50 rounded-full w-fit mx-auto animate-pulse">
+              <Calculator className="w-10 h-10 text-gray-300" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="font-bold text-lg text-gray-900">No race entries analyzed</h3>
+              <p className="text-gray-500 max-w-sm mx-auto text-sm">This race currently has no runners or analysis scores computed. Please click "Update Analysis" to compute scores.</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
