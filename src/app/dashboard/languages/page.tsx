@@ -3,9 +3,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Globe, Users } from "lucide-react";
-import { 
-  Pie, 
-  PieChart, 
+import {
+  Pie,
+  PieChart,
   Cell,
   ResponsiveContainer,
   Tooltip,
@@ -94,12 +94,12 @@ export default function LanguageManagementPage() {
             <div className="h-[350px] w-full relative">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Tooltip 
-                    contentStyle={{ 
-                      borderRadius: '12px', 
-                      border: 'none', 
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
-                    }} 
+                  <Tooltip
+                    contentStyle={{
+                      borderRadius: '12px',
+                      border: 'none',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                    }}
                   />
                   <Pie
                     data={chartData}
@@ -116,17 +116,17 @@ export default function LanguageManagementPage() {
                       <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
                     ))}
                   </Pie>
-                  <Legend 
-                    verticalAlign="bottom" 
+                  <Legend
+                    verticalAlign="bottom"
                     align="center"
                     iconType="rect"
                     formatter={(value) => <span className="text-[14px] font-medium text-gray-600">{value}</span>}
                   />
                 </PieChart>
               </ResponsiveContainer>
-              
+
               {/* Labels */}
-              <div className="absolute top-[10%] left-[50%] -translate-x-1/2 text-[12px] font-medium text-red-500">
+              <div className="absolute top-[0%] left-[50%] -translate-x-1/2 text-[12px] font-medium text-red-500">
                 Turkish 54%
               </div>
               <div className="absolute bottom-[25%] left-[30%] text-[12px] font-medium text-blue-500">
@@ -158,9 +158,9 @@ export default function LanguageManagementPage() {
                   <span className="text-lg font-bold text-gray-900">{stat.percentage}%</span>
                 </div>
                 <div className="space-y-2">
-                  <Progress 
-                    value={stat.percentage} 
-                    className="h-2 bg-gray-100 [&>[data-slot=progress-indicator]]:bg-blue-600" 
+                  <Progress
+                    value={stat.percentage}
+                    className="h-2 bg-gray-100 [&>[data-slot=progress-indicator]]:bg-blue-600"
                   />
                 </div>
               </div>
