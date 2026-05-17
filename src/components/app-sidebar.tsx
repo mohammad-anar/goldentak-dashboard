@@ -37,6 +37,11 @@ const navItems = [
     icon: IconDashboard,
   },
   {
+    title: "User Management",
+    url: "/dashboard/users",
+    icon: IconUsers,
+  },
+  {
     title: "Current Login Users",
     url: "/dashboard/current-login-users",
     icon: IconUsers,
