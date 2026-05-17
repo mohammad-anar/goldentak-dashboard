@@ -37,8 +37,8 @@ const navItems = [
     icon: IconDashboard,
   },
   {
-    title: "Users",
-    url: "/dashboard/users",
+    title: "Current Login Users",
+    url: "/dashboard/current-login-users",
     icon: IconUsers,
   },
   {
