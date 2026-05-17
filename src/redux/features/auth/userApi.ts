@@ -21,11 +21,17 @@ export const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+    getUserById: builder.query({
+      query: (id) => `/auth/users/${id}`,
+      providesTags: (result, error, id) => [{ type: "User", id }],
+    }),
   }),
 });
 
 export const { 
   useGetUsersQuery, 
   useGetStatsQuery,
-  useUpdateSubscriptionMutation 
+  useUpdateSubscriptionMutation,
+  useGetUserByIdQuery
 } = userApi;
+
