@@ -43,6 +43,90 @@ import { useGetUsersQuery, useUpdateSubscriptionMutation } from "@/redux/feature
 import { toast } from "sonner";
 import Link from "next/link";
 
+// High-fidelity fallback dummy users
+export const DUMMY_USERS = [
+  {
+    id: "dummy-user-1",
+    deviceId: "device_iphone_15_pro_abc123",
+    name: "Alex Rider",
+    username: "alexrider",
+    email: "alex@rider.com",
+    phone: "+15550199",
+    role: "USER",
+    isVerified: true,
+    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+    subscription: {
+      plan: "Premium Monthly",
+      startDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      endDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000).toISOString(),
+      isActive: true,
+    }
+  },
+  {
+    id: "dummy-user-2",
+    deviceId: "device_google_pixel_8_pqr012",
+    name: "Maria Santos",
+    username: "mariasantos",
+    email: "maria@santos.com",
+    phone: "+34612345678",
+    role: "USER",
+    isVerified: true,
+    createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+    subscription: {
+      plan: "Premium Yearly",
+      startDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      endDate: new Date(Date.now() + 355 * 24 * 60 * 60 * 1000).toISOString(),
+      isActive: true,
+    }
+  },
+  {
+    id: "dummy-user-3",
+    deviceId: "device_samsung_s24_xyz789",
+    name: "John Miller",
+    username: "johnmiller",
+    email: "john@miller.com",
+    phone: "+15550244",
+    role: "USER",
+    isVerified: false,
+    createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+    subscription: {
+      plan: "Basic Monthly",
+      startDate: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
+      endDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      isActive: false,
+    }
+  },
+  {
+    id: "dummy-user-4",
+    deviceId: "device_ipad_pro_def456",
+    name: "Sarah Jenkins",
+    username: "sarahj",
+    email: "sarah@jenkins.com",
+    phone: "+15550777",
+    role: "USER",
+    isVerified: false,
+    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    subscription: null
+  },
+  {
+    id: "dummy-user-5",
+    deviceId: "device_oneplus_12_mno345",
+    name: "David Chen",
+    username: "davidchen",
+    email: "david@chen.com",
+    phone: "+8613900001234",
+    role: "USER",
+    isVerified: false,
+    createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+    subscription: {
+      plan: "Premium Yearly",
+      startDate: new Date(Date.now() - 400 * 24 * 60 * 60 * 1000).toISOString(),
+      endDate: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
+      isActive: false,
+    }
+  }
+];
+
 export default function UserManagementPage() {
   // Query state
   const [page, setPage] = useState(1);
@@ -63,14 +147,51 @@ export default function UserManagementPage() {
 
   const [updateSubscription] = useUpdateSubscriptionMutation();
 
-  const users = responseData?.data || [];
-  const meta = responseData?.meta || { page: 1, limit: 10, total: 0, totalPage: 1 };
+  // Determine user data with premium frontend-side mock fallback
+  const apiUsers = responseData?.data || [];
+  const hasApiData = responseData?.data && responseData.data.length > 0;
+  
+  let users = apiUsers;
+  let meta = responseData?.meta || { page: 1, limit: 10, total: 0, totalPage: 1 };
+  
+  if (!hasApiData && !isLoading && !isFetching) {
+    // Client-side filtering of dummy users so searching/filtering stays functional
+    let filteredDummies = DUMMY_USERS;
+    
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filteredDummies = filteredDummies.filter(u => 
+        u.deviceId.toLowerCase().includes(term) ||
+        (u.name && u.name.toLowerCase().includes(term)) ||
+        (u.email && u.email.toLowerCase().includes(term)) ||
+        (u.username && u.username.toLowerCase().includes(term))
+      );
+    }
+    
+    if (subscriptionStatus === "subscribed") {
+      filteredDummies = filteredDummies.filter(u => u.subscription?.isActive);
+    } else if (subscriptionStatus === "unsubscribed") {
+      filteredDummies = filteredDummies.filter(u => !u.subscription || !u.subscription.isActive);
+    }
+    
+    const total = filteredDummies.length;
+    const totalPage = Math.ceil(total / limit) || 1;
+    const startIndex = (page - 1) * limit;
+    
+    users = filteredDummies.slice(startIndex, startIndex + limit);
+    meta = {
+      page,
+      limit,
+      total,
+      totalPage
+    };
+  }
 
   // Handle Search Input Debounce
   useEffect(() => {
     const handler = setTimeout(() => {
-      setSearchTerm(searchInput);
       setPage(1); // Reset to page 1 on search
+      setSearchTerm(searchInput);
     }, 500);
 
     return () => clearTimeout(handler);

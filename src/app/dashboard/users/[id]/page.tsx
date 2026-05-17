@@ -27,18 +27,27 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { DUMMY_USERS } from "../page";
+
 export default function UserDetailPage() {
   const params = useParams();
   const router = useRouter();
   const userId = params.id as string;
 
+  const isDummy = userId?.startsWith("dummy-user-");
+
   const { data: responseData, isLoading, isFetching, refetch } = useGetUserByIdQuery(userId, {
-    skip: !userId
+    skip: !userId || isDummy
   });
 
   const [updateSubscription, { isLoading: isUpdating }] = useUpdateSubscriptionMutation();
 
-  const user = responseData?.data;
+  // Find dummy user if requested
+  const dummyUser = isDummy 
+    ? DUMMY_USERS.find(u => u.id === userId) 
+    : undefined;
+
+  const user = dummyUser || responseData?.data;
 
   const handleAddDays = async (days: number) => {
     if (!user?.deviceId) {

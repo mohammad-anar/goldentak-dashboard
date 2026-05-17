@@ -36,10 +36,13 @@ import {
   ChevronRight,
   RefreshCw,
   UserCheck,
-  UserX
+  UserX,
+  Eye
 } from "lucide-react";
 import { useGetUsersQuery, useUpdateSubscriptionMutation } from "@/redux/features/auth/userApi";
 import { toast } from "sonner";
+import Link from "next/link";
+import { DUMMY_USERS } from "../users/page";
 
 export default function CurrentLoginUsersPage() {
   // Query state
@@ -61,8 +64,45 @@ export default function CurrentLoginUsersPage() {
 
   const [updateSubscription, { isLoading: isUpdating }] = useUpdateSubscriptionMutation();
 
-  const users = responseData?.data || [];
-  const meta = responseData?.meta || { page: 1, limit: 10, total: 0, totalPage: 1 };
+  // Determine user data with premium frontend-side mock fallback
+  const apiUsers = responseData?.data || [];
+  const hasApiData = responseData?.data && responseData.data.length > 0;
+  
+  let users = apiUsers;
+  let meta = responseData?.meta || { page: 1, limit: 10, total: 0, totalPage: 1 };
+  
+  if (!hasApiData && !isLoading && !isFetching) {
+    // Client-side filtering of dummy users so searching/filtering stays functional
+    let filteredDummies = DUMMY_USERS.filter(u => u.deviceId); // Only users with Device ID
+    
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filteredDummies = filteredDummies.filter(u => 
+        u.deviceId.toLowerCase().includes(term) ||
+        (u.name && u.name.toLowerCase().includes(term)) ||
+        (u.email && u.email.toLowerCase().includes(term)) ||
+        (u.username && u.username.toLowerCase().includes(term))
+      );
+    }
+    
+    if (subscriptionStatus === "subscribed") {
+      filteredDummies = filteredDummies.filter(u => u.subscription?.isActive);
+    } else if (subscriptionStatus === "unsubscribed") {
+      filteredDummies = filteredDummies.filter(u => !u.subscription || !u.subscription.isActive);
+    }
+    
+    const total = filteredDummies.length;
+    const totalPage = Math.ceil(total / limit) || 1;
+    const startIndex = (page - 1) * limit;
+    
+    users = filteredDummies.slice(startIndex, startIndex + limit);
+    meta = {
+      page,
+      limit,
+      total,
+      totalPage
+    };
+  }
 
   // Handle Search Input Debounce / Change
   useEffect(() => {
@@ -251,33 +291,41 @@ export default function CurrentLoginUsersPage() {
                         {new Date(user.createdAt).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })}
                       </TableCell>
                       <TableCell className="text-right py-4 px-6">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-600 rounded-lg">
-                              <MoreVertical className="h-4.5 w-4.5" />
+                        <div className="flex items-center justify-end gap-2">
+                          <Link href={`/dashboard/users/${user.id}`}>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:bg-blue-50 rounded-lg" title="View Details">
+                              <Eye className="h-4.5 w-4.5" />
                             </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-[180px] rounded-xl p-1.5 shadow-xl border-none bg-white">
-                            <DropdownMenuItem 
-                              onClick={() => handleAddDays(user.deviceId, 30)}
-                              className="flex items-center gap-2.5 py-2 px-3 rounded-lg cursor-pointer focus:bg-blue-50 text-xs font-medium text-gray-700"
-                            >
-                              <Plus className="w-4 h-4 text-blue-600" />
-                              <span>Add 30 Days</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => handleAddDays(user.deviceId, 365)}
-                              className="flex items-center gap-2.5 py-2 px-3 rounded-lg cursor-pointer focus:bg-purple-50 text-xs font-medium text-gray-700"
-                            >
-                              <TrendingUp className="w-4 h-4 text-purple-600" />
-                              <span>Add 1 Year</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="flex items-center gap-2.5 py-2 px-3 rounded-lg cursor-pointer focus:bg-red-50 text-xs font-medium text-red-500">
-                              <Ban className="w-4 h-4 text-red-500" />
-                              <span>Block Device</span>
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                          </Link>
+                          
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-600 rounded-lg">
+                                <MoreVertical className="h-4.5 w-4.5" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-[180px] rounded-xl p-1.5 shadow-xl border-none bg-white">
+                              <DropdownMenuItem 
+                                onClick={() => handleAddDays(user.deviceId, 30)}
+                                className="flex items-center gap-2.5 py-2 px-3 rounded-lg cursor-pointer focus:bg-blue-50 text-xs font-medium text-gray-700"
+                              >
+                                <Plus className="w-4.5 h-4.5 text-blue-600" />
+                                <span>Add 30 Days</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => handleAddDays(user.deviceId, 365)}
+                                className="flex items-center gap-2.5 py-2 px-3 rounded-lg cursor-pointer focus:bg-purple-50 text-xs font-medium text-gray-700"
+                              >
+                                <TrendingUp className="w-4.5 h-4.5 text-purple-600" />
+                                <span>Add 1 Year</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem className="flex items-center gap-2.5 py-2 px-3 rounded-lg cursor-pointer focus:bg-red-50 text-xs font-medium text-red-500">
+                                <Ban className="w-4.5 h-4.5 text-red-500" />
+                                <span>Block Device</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
