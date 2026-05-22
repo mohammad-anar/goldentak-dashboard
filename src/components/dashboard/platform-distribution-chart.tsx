@@ -14,12 +14,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const data = [
-  { name: "iOS", value: 54, color: "#6366f1" },
-  { name: "Android", value: 46, color: "#ec4899" },
-];
+interface PlatformDistributionChartProps {
+  data?: { name: string; value: number; color: string }[];
+}
 
-export function PlatformDistributionChart() {
+export function PlatformDistributionChart({ data = [] }: PlatformDistributionChartProps) {
+  const total = data.reduce((acc, curr) => acc + curr.value, 0);
+  const iosItem = data.find((d) => d.name === "iOS");
+  const androidItem = data.find((d) => d.name === "Android");
+  const iosPercent = total > 0 && iosItem ? Math.round((iosItem.value / total) * 100) : 0;
+  const androidPercent = total > 0 && androidItem ? Math.round((androidItem.value / total) * 100) : 0;
+
   return (
     <Card className="border-none shadow-sm h-full">
       <CardHeader>
@@ -56,13 +61,14 @@ export function PlatformDistributionChart() {
           
           {/* Labels */}
           <div className="absolute top-[20%] right-[25%] text-[12px] font-medium text-indigo-600">
-            iOS 54%
+            iOS {iosPercent}% ({iosItem?.value || 0})
           </div>
           <div className="absolute bottom-[20%] right-[30%] text-[12px] font-medium text-pink-600">
-            Android 46%
+            Android {androidPercent}% ({androidItem?.value || 0})
           </div>
         </div>
       </CardContent>
     </Card>
   );
 }
+

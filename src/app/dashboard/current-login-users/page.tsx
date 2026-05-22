@@ -39,7 +39,7 @@ import {
   UserX,
   Eye
 } from "lucide-react";
-import { useGetUsersQuery, useUpdateSubscriptionMutation } from "@/redux/features/auth/userApi";
+import { useGetCurrentLoginUsersQuery, useUpdateSubscriptionMutation } from "@/redux/features/auth/userApi";
 import { toast } from "sonner";
 import Link from "next/link";
 import { DUMMY_USERS } from "../users/page";
@@ -53,7 +53,7 @@ export default function CurrentLoginUsersPage() {
   const [subscriptionStatus, setSubscriptionStatus] = useState("all");
 
   // Fetch users with filters
-  const { data: responseData, isLoading, isFetching, refetch } = useGetUsersQuery({
+  const { data: responseData, isLoading, isFetching, refetch } = useGetCurrentLoginUsersQuery({
     page,
     limit,
     searchTerm,

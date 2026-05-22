@@ -9,13 +9,20 @@ export const userApi = baseApi.injectEndpoints({
       }),
       providesTags: ["User"],
     }),
+    getCurrentLoginUsers: builder.query({
+      query: (params) => ({
+        url: "/auth/current-login-users",
+        params,
+      }),
+      providesTags: ["User"],
+    }),
     getStats: builder.query({
       query: () => "/auth/stats",
       providesTags: ["User"],
     }),
     updateSubscription: builder.mutation({
       query: (data) => ({
-        url: "/auth/purchase-subscription",
+        url: "/auth/users/update-subscription",
         method: "POST",
         body: data,
       }),
@@ -30,6 +37,7 @@ export const userApi = baseApi.injectEndpoints({
 
 export const { 
   useGetUsersQuery, 
+  useGetCurrentLoginUsersQuery,
   useGetStatsQuery,
   useUpdateSubscriptionMutation,
   useGetUserByIdQuery

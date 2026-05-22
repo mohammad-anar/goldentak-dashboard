@@ -16,12 +16,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const data = [
-  { name: "Active", value: 8200 },
-  { name: "Passive", value: 4250 },
-];
+interface UserActivityChartProps {
+  data?: { name: string; value: number }[];
+}
 
-export function UserActivityChart() {
+export function UserActivityChart({ data = [] }: UserActivityChartProps) {
   return (
     <Card className="border-none shadow-sm h-full">
       <CardHeader>
@@ -43,8 +42,7 @@ export function UserActivityChart() {
                 axisLine={false} 
                 tickLine={false} 
                 tick={{ fill: '#9ca3af', fontSize: 12 }}
-                domain={[0, 10000]}
-                ticks={[0, 2500, 5000, 7500, 10000]}
+                domain={[0, "auto"]}
               />
               <Tooltip 
                 cursor={{ fill: 'transparent' }}
@@ -67,3 +65,4 @@ export function UserActivityChart() {
     </Card>
   );
 }
+

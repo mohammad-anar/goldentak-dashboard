@@ -42,6 +42,8 @@ export default function LoginPage() {
       if (response.success) {
         localStorage.setItem("token", response.data.accessToken);
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("adminEmail", response.data.user?.email || data.email);
         toast.success("Logged in successfully");
         router.push("/dashboard");
       }

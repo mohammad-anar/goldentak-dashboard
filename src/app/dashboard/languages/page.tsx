@@ -2,7 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Globe, Users } from "lucide-react";
+import { Globe, Users, Loader2 } from "lucide-react";
+import { useGetLanguageStatsQuery } from "@/redux/features/language/languageApi";
 import {
   Pie,
   PieChart,
@@ -12,54 +13,72 @@ import {
   Legend
 } from "recharts";
 
-const metrics = [
-  {
-    label: "Total Languages",
-    value: "3",
-    icon: Globe,
-    iconColor: "text-blue-500",
-    iconBg: "bg-blue-100/50",
-  },
-  {
-    label: "Total Users",
-    value: "12,450",
-    icon: Users,
-    iconColor: "text-green-500",
-    iconBg: "bg-green-100/50",
-  },
-];
-
-const chartData = [
-  { name: "Turkish", value: 54, color: "#ef4444" },
-  { name: "English", value: 31, color: "#3b82f6" },
-  { name: "Arabic", value: 14, color: "#10b981" },
-];
-
-const languageStats = [
-  {
-    name: "Turkish",
-    percentage: 54.5,
-    users: "6,780",
-    flag: "🇹🇷",
-    color: "bg-blue-600",
-  },
-  {
-    name: "English",
-    percentage: 31.5,
-    users: "3,920",
-    flag: "🇬🇧",
-    color: "bg-blue-600",
-  },
-  {
-    name: "Arabic",
-    percentage: 14,
-    users: "1,750",
-    flag: "🇸🇦",
-    color: "bg-blue-600",
-  },
-];
-
 export default function LanguageManagementPage() {
+  const { data: response, isLoading } = useGetLanguageStatsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[500px]">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <span className="ml-2 text-gray-500 font-medium">Loading language statistics...</span>
+      </div>
+    );
+  }
+
+  const languageData = response?.data || {
+    totalLanguages: 3,
+    totalUsers: 0,
+    distribution: [],
+  };
+
+  const metrics = [
+    {
+      label: "Total Languages",
+      value: String(languageData.totalLanguages ?? 3),
+      icon: Globe,
+      iconColor: "text-blue-500",
+      iconBg: "bg-blue-100/50",
+    },
+    {
+      label: "Total Users",
+      value: (languageData.totalUsers ?? 0).toLocaleString(),
+      icon: Users,
+      iconColor: "text-green-500",
+      iconBg: "bg-green-100/50",
+    },
+  ];
+
+  const languageConfig: Record<string, { name: string; flag: string; color: string; indicatorColor: string; textClass: string }> = {
+    tr: { name: "Turkish", flag: "🇹🇷", color: "#ef4444", indicatorColor: "[&>[data-slot=progress-indicator]]:bg-red-500", textClass: "text-red-500" },
+    en: { name: "English", flag: "🇬🇧", color: "#3b82f6", indicatorColor: "[&>[data-slot=progress-indicator]]:bg-blue-600", textClass: "text-blue-500" },
+    ar: { name: "Arabic", flag: "🇸🇦", color: "#10b981", indicatorColor: "[&>[data-slot=progress-indicator]]:bg-green-500", textClass: "text-green-500" },
+  };
+
+  const distribution = languageData.distribution || [];
+
+  const chartData = distribution.map((item: any) => {
+    const config = languageConfig[item.code] || { name: item.language, flag: "🌐", color: "#6b7280", indicatorColor: "[&>[data-slot=progress-indicator]]:bg-gray-500", textClass: "text-gray-500" };
+    return {
+      name: config.name,
+      value: item.count,
+      percentage: item.percentage,
+      color: config.color,
+    };
+  });
+
+  const languageStats = distribution.map((item: any) => {
+    const config = languageConfig[item.code] || { name: item.language, flag: "🌐", color: "#6b7280", indicatorColor: "[&>[data-slot=progress-indicator]]:bg-gray-500", textClass: "text-gray-500" };
+    return {
+      name: config.name,
+      percentage: item.percentage,
+      users: item.count.toLocaleString(),
+      flag: config.flag,
+      indicatorColor: config.indicatorColor,
+    };
+  });
+
   return (
     <div className="flex flex-col gap-8 py-8 md:py-10 px-4 lg:px-6">
       {/* Title */}
@@ -92,49 +111,67 @@ export default function LanguageManagementPage() {
           </CardHeader>
           <CardContent>
             <div className="h-[350px] w-full relative">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Tooltip
-                    contentStyle={{
-                      borderRadius: '12px',
-                      border: 'none',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                    }}
-                  />
-                  <Pie
-                    data={chartData}
-                    cx="50%"
-                    cy="45%"
-                    innerRadius={0}
-                    outerRadius={110}
-                    paddingAngle={0}
-                    dataKey="value"
-                    startAngle={90}
-                    endAngle={450}
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
-                    ))}
-                  </Pie>
-                  <Legend
-                    verticalAlign="bottom"
-                    align="center"
-                    iconType="rect"
-                    formatter={(value) => <span className="text-[14px] font-medium text-gray-600">{value}</span>}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+              {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Tooltip
+                      contentStyle={{
+                        borderRadius: '12px',
+                        border: 'none',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      }}
+                    />
+                    <Pie
+                      data={chartData}
+                      cx="50%"
+                      cy="45%"
+                      innerRadius={0}
+                      outerRadius={110}
+                      paddingAngle={0}
+                      dataKey="value"
+                      startAngle={90}
+                      endAngle={450}
+                    >
+                      {chartData.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
+                      ))}
+                    </Pie>
+                    <Legend
+                      verticalAlign="bottom"
+                      align="center"
+                      iconType="rect"
+                      formatter={(value) => <span className="text-[14px] font-medium text-gray-600">{value}</span>}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-400">
+                  No distribution data available
+                </div>
+              )}
 
-              {/* Labels */}
-              <div className="absolute top-[0%] left-[50%] -translate-x-1/2 text-[12px] font-medium text-red-500">
-                Turkish 54%
-              </div>
-              <div className="absolute bottom-[25%] left-[30%] text-[12px] font-medium text-blue-500">
-                English 31%
-              </div>
-              <div className="absolute top-[50%] right-[25%] text-[12px] font-medium text-green-500">
-                Arabic 14%
-              </div>
+              {/* Dynamic Absolute Labels */}
+              {chartData.map((data: any) => {
+                let positionClasses = "";
+                let colorClass = "";
+                if (data.name === "Turkish") {
+                  positionClasses = "absolute top-[0%] left-[50%] -translate-x-1/2";
+                  colorClass = "text-red-500";
+                } else if (data.name === "English") {
+                  positionClasses = "absolute bottom-[25%] left-[30%]";
+                  colorClass = "text-blue-500";
+                } else if (data.name === "Arabic") {
+                  positionClasses = "absolute top-[50%] right-[25%]";
+                  colorClass = "text-green-500";
+                } else {
+                  return null;
+                }
+                return (
+                  <div key={data.name} className={`${positionClasses} text-[12px] font-medium ${colorClass}`}>
+                    {data.name} {data.percentage}%
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
@@ -145,7 +182,7 @@ export default function LanguageManagementPage() {
             <CardTitle className="text-lg font-bold">Language Statistics</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {languageStats.map((stat) => (
+            {languageStats.map((stat: { name: string; percentage: number; users: string; flag: string; indicatorColor: string }) => (
               <div key={stat.name} className="p-5 rounded-2xl border border-gray-100 bg-white space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -160,11 +197,16 @@ export default function LanguageManagementPage() {
                 <div className="space-y-2">
                   <Progress
                     value={stat.percentage}
-                    className="h-2 bg-gray-100 [&>[data-slot=progress-indicator]]:bg-blue-600"
+                    className={`h-2 bg-gray-100 ${stat.indicatorColor}`}
                   />
                 </div>
               </div>
             ))}
+            {languageStats.length === 0 && (
+              <div className="text-center py-6 text-gray-400">
+                No language data found
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

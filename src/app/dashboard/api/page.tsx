@@ -44,19 +44,15 @@ const metrics = [
 ];
 
 const endpoints = [
-  { name: "Race Results", path: "/api/races/results", lastCall: "1 min ago", count: "12,450 calls" },
-  { name: "Statistics", path: "/api/statistics", lastCall: "3 mins ago", count: "8,920 calls" },
-  { name: "Horse Details", path: "/api/horses", lastCall: "5 mins ago", count: "15,780 calls" },
-  { name: "Track Info", path: "/api/tracks", lastCall: "2 mins ago", count: "6,340 calls" },
-  { name: "Jockey Stats", path: "/api/jockeys", lastCall: "10 mins ago", count: "4,210 calls" },
-  { name: "Cities", path: "/api/cities", lastCall: "15 mins ago", count: "2,890 calls" },
+  { name: "Today's Racecards", path: "/races/today", lastCall: "1 min ago", count: "4,250 calls" },
+  { name: "Race Details", path: "/races/{id}", lastCall: "3 mins ago", count: "8,920 calls" },
+  { name: "AI Race Predictions", path: "/predictions/race/{id}", lastCall: "5 mins ago", count: "15,780 calls" },
 ];
 
 const syncs = [
-  { name: "Race Results", time: "2026-05-12 14:45", result: "156 records synced" },
-  { name: "Horse Data", time: "2026-05-12 14:30", result: "89 records synced" },
-  { name: "Statistics", time: "2026-05-12 14:15", result: "234 records synced" },
-  { name: "Track Info", time: "2026-05-12 14:00", result: "45 records synced" },
+  { name: "Racecard Sync", time: "2026-05-12 14:45", result: "24 races synced" },
+  { name: "AI Prediction Fetch", time: "2026-05-12 14:30", result: "12 prediction cards populated" },
+  { name: "Custom Calculation", time: "2026-05-12 14:15", result: "184 runners analyzed" },
 ];
 
 export default function ApiManagementPage() {
@@ -93,31 +89,34 @@ export default function ApiManagementPage() {
       {/* Configuration Card */}
       <Card className="border-none shadow-sm rounded-2xl">
         <CardHeader>
-          <CardTitle className="text-lg font-bold">TJK API Configuration</CardTitle>
+          <CardTitle className="text-lg font-bold">Rapid API Configuration</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-500">API Base URL</label>
               <Input 
-                defaultValue="https://api.tjk.org" 
+                defaultValue="https://ai-horse-racing-predictions.p.rapidapi.com" 
                 className="py-6 rounded-xl bg-gray-50/50 border-gray-100"
+                disabled
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-500">API Key</label>
+              <label className="text-sm font-medium text-gray-500">API Key (RAPID_API_SECRET_KEY)</label>
               <Input 
                 type="password" 
                 defaultValue="••••••••••••••••••••" 
                 className="py-6 rounded-xl bg-gray-50/50 border-gray-100"
+                disabled
               />
             </div>
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-500">Sync Interval</label>
             <Input 
-              placeholder="Select sync interval" 
+              defaultValue="Every 30 minutes (Automatic Background Cron)" 
               className="py-6 rounded-xl bg-gray-50/50 border-gray-100"
+              disabled
             />
           </div>
         </CardContent>

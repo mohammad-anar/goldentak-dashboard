@@ -14,12 +14,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const data = [
-  { name: "Free", value: 75, color: "#64748b" },
-  { name: "Paid", value: 25, color: "#8b5cf6" },
-];
+interface SubscriptionStatusChartProps {
+  data?: { name: string; value: number; color: string }[];
+}
 
-export function SubscriptionStatusChart() {
+export function SubscriptionStatusChart({ data = [] }: SubscriptionStatusChartProps) {
+  const total = data.reduce((acc, curr) => acc + curr.value, 0);
+  const freeItem = data.find((d) => d.name === "Free");
+  const paidItem = data.find((d) => d.name === "Paid");
+  const freePercent = total > 0 && freeItem ? Math.round((freeItem.value / total) * 100) : 0;
+  const paidPercent = total > 0 && paidItem ? Math.round((paidItem.value / total) * 100) : 0;
+
   return (
     <Card className="border-none shadow-sm h-full">
       <CardHeader>
@@ -56,13 +61,14 @@ export function SubscriptionStatusChart() {
           
           {/* Labels */}
           <div className="absolute top-[25%] left-[30%] text-[12px] font-medium text-gray-500">
-            Free 75%
+            Free {freePercent}% ({freeItem?.value || 0})
           </div>
           <div className="absolute bottom-[30%] right-[30%] text-[12px] font-medium text-purple-600">
-            Paid 25%
+            Paid {paidPercent}% ({paidItem?.value || 0})
           </div>
         </div>
       </CardContent>
     </Card>
   );
 }
+

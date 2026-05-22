@@ -16,15 +16,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const data = [
-  { month: "Jan", users: 8000 },
-  { month: "Feb", users: 9500 },
-  { month: "Mar", users: 10500 },
-  { month: "Apr", users: 11800 },
-  { month: "May", users: 13000 },
-];
+interface UserGrowthChartProps {
+  data?: { month: string; users: number }[];
+}
 
-export function UserGrowthChart() {
+export function UserGrowthChart({ data = [] }: UserGrowthChartProps) {
   return (
     <Card className="border-none shadow-sm h-full">
       <CardHeader>
@@ -46,8 +42,7 @@ export function UserGrowthChart() {
                 axisLine={false} 
                 tickLine={false} 
                 tick={{ fill: '#9ca3af', fontSize: 12 }}
-                domain={[0, 14000]}
-                ticks={[0, 3500, 7000, 10500, 14000]}
+                domain={[0, "auto"]}
               />
               <Tooltip 
                 contentStyle={{ 
@@ -77,3 +72,4 @@ export function UserGrowthChart() {
     </Card>
   );
 }
+

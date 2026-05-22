@@ -11,7 +11,6 @@ import {
   IconApi,
   IconTrophy,
   IconLogout,
-  IconAdjustments,
 } from "@tabler/icons-react";
 
 import {
@@ -26,7 +25,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -35,6 +34,11 @@ const navItems = [
     title: "Dashboard",
     url: "/dashboard",
     icon: IconDashboard,
+  },
+  {
+    title: "Race Bulletin",
+    url: "/dashboard/bulletin",
+    icon: IconCalendar,
   },
   {
     title: "User Management",
@@ -67,11 +71,6 @@ const navItems = [
     icon: IconApi,
   },
   {
-    title: "Algorithm",
-    url: "/dashboard/algorithm",
-    icon: IconAdjustments,
-  },
-  {
     title: "Race Results",
     url: "/dashboard/race-results",
     icon: IconTrophy,
@@ -86,13 +85,38 @@ const navItems = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  // Read admin email from localStorage (set during login)
+  const [adminEmail, setAdminEmail] = React.useState<string>("Admin");
+
+  React.useEffect(() => {
+    const stored = localStorage.getItem("adminEmail");
+    if (stored) setAdminEmail(stored);
+  }, []);
+
+  const adminInitials = adminEmail
+    .split("@")[0]
+    .replace(/[^a-zA-Z]/g, " ")
+    .split(" ")
+    .filter(Boolean)
+    .map((w) => w[0].toUpperCase())
+    .slice(0, 2)
+    .join("") || "AD";
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("token");
+    localStorage.removeItem("adminEmail");
+    router.replace("/login");
+  };
 
   return (
     <Sidebar collapsible="offcanvas" className="bg-[#0b0e14] border-r-0" {...props}>
       <SidebarHeader className="bg-[#0b0e14] pt-8">
         <div className="flex justify-center mb-6">
           <Link href="/dashboard">
-            <Image src={logo} alt="Which Win Logo" width={160} height={80} className="object-contain" />
+            <Image src={logo} alt="GoldenTak Logo" width={160} height={80} className="object-contain" />
           </Link>
         </div>
       </SidebarHeader>
@@ -128,6 +152,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <Button 
             variant="destructive" 
             className="w-full bg-red-600 hover:bg-red-700 text-white rounded-xl py-6 font-semibold"
+            onClick={handleLogout}
           >
             <IconLogout className="w-5 h-5 mr-2" />
             Logout
@@ -137,11 +162,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <div className="flex items-center gap-3 px-2 py-2">
           <Avatar className="h-10 w-10 border border-gray-700">
             <AvatarImage src="/avatars/admin.jpg" alt="Admin" />
-            <AvatarFallback className="bg-gray-800 text-white">AD</AvatarFallback>
+            <AvatarFallback className="bg-gray-800 text-white">{adminInitials}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col overflow-hidden text-left">
-            <span className="text-sm font-semibold text-white truncate">admin@whichwin.app</span>
-            <span className="text-xs text-gray-400 truncate">Admin</span>
+            <span className="text-sm font-semibold text-white truncate">{adminEmail}</span>
+            <span className="text-xs text-gray-400 truncate">Administrator</span>
           </div>
         </div>
       </SidebarFooter>

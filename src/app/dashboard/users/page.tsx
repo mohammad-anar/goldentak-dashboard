@@ -1,34 +1,34 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from "@/components/ui/table";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { 
-  MoreVertical, 
-  Search, 
-  Plus, 
+import {
+  MoreVertical,
+  Search,
+  Plus,
   TrendingUp,
   Ban,
   Filter,
@@ -150,34 +150,34 @@ export default function UserManagementPage() {
   // Determine user data with premium frontend-side mock fallback
   const apiUsers = responseData?.data || [];
   const hasApiData = responseData?.data && responseData.data.length > 0;
-  
+
   let users = apiUsers;
   let meta = responseData?.meta || { page: 1, limit: 10, total: 0, totalPage: 1 };
-  
+
   if (!hasApiData && !isLoading && !isFetching) {
     // Client-side filtering of dummy users so searching/filtering stays functional
     let filteredDummies = DUMMY_USERS;
-    
+
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filteredDummies = filteredDummies.filter(u => 
+      filteredDummies = filteredDummies.filter(u =>
         u.deviceId.toLowerCase().includes(term) ||
         (u.name && u.name.toLowerCase().includes(term)) ||
         (u.email && u.email.toLowerCase().includes(term)) ||
         (u.username && u.username.toLowerCase().includes(term))
       );
     }
-    
+
     if (subscriptionStatus === "subscribed") {
       filteredDummies = filteredDummies.filter(u => u.subscription?.isActive);
     } else if (subscriptionStatus === "unsubscribed") {
       filteredDummies = filteredDummies.filter(u => !u.subscription || !u.subscription.isActive);
     }
-    
+
     const total = filteredDummies.length;
     const totalPage = Math.ceil(total / limit) || 1;
     const startIndex = (page - 1) * limit;
-    
+
     users = filteredDummies.slice(startIndex, startIndex + limit);
     meta = {
       page,
@@ -225,10 +225,10 @@ export default function UserManagementPage() {
           <p className="text-gray-500 mt-1">Manage and view details for all login and device accounts in this project.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={() => refetch()} 
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => refetch()}
             className="rounded-xl border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
             disabled={isFetching}
           >
@@ -241,8 +241,8 @@ export default function UserManagementPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
         <div className="relative w-full md:max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input 
-            placeholder="Search by Device ID, Name, Email, Username..." 
+          <Input
+            placeholder="Search by Device ID, Name, Email, Username..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="pl-11 pr-4 bg-gray-50/50 border-gray-200 focus:border-purple-300 focus:ring focus:ring-purple-100 rounded-xl py-5 text-sm"
@@ -254,8 +254,8 @@ export default function UserManagementPage() {
             <Filter className="h-4 w-4 text-gray-400" />
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Subscription:</span>
           </div>
-          <Select 
-            value={subscriptionStatus} 
+          <Select
+            value={subscriptionStatus}
             onValueChange={handleStatusFilterChange}
           >
             <SelectTrigger className="w-[180px] rounded-xl bg-gray-50/50 border-gray-200">
@@ -280,8 +280,8 @@ export default function UserManagementPage() {
 
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Show:</span>
-            <Select 
-              value={limit.toString()} 
+            <Select
+              value={limit.toString()}
               onValueChange={handleLimitChange}
             >
               <SelectTrigger className="w-[80px] rounded-xl bg-gray-50/50 border-gray-200">
@@ -364,8 +364,8 @@ export default function UserManagementPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-gray-500 py-4 px-6 text-xs font-medium">
-                        {user.subscription?.endDate 
-                          ? new Date(user.subscription.endDate).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' }) 
+                        {user.subscription?.endDate
+                          ? new Date(user.subscription.endDate).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })
                           : "-"}
                       </TableCell>
                       <TableCell className="text-gray-400 py-4 px-6 text-xs font-medium">
@@ -378,7 +378,7 @@ export default function UserManagementPage() {
                               <Eye className="h-4.5 w-4.5" />
                             </Button>
                           </Link>
-                          
+
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-600 rounded-lg">
@@ -386,7 +386,7 @@ export default function UserManagementPage() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-[180px] rounded-xl p-1.5 shadow-xl border-none bg-white">
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 onClick={() => handleAddDays(user.deviceId, 30)}
                                 disabled={!user.deviceId}
                                 className="flex items-center gap-2.5 py-2 px-3 rounded-lg cursor-pointer focus:bg-blue-50 text-xs font-medium text-gray-700"
@@ -394,7 +394,7 @@ export default function UserManagementPage() {
                                 <Plus className="w-4 h-4 text-blue-600" />
                                 <span>Add 30 Days</span>
                               </DropdownMenuItem>
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 onClick={() => handleAddDays(user.deviceId, 365)}
                                 disabled={!user.deviceId}
                                 className="flex items-center gap-2.5 py-2 px-3 rounded-lg cursor-pointer focus:bg-purple-50 text-xs font-medium text-gray-700"
@@ -424,18 +424,18 @@ export default function UserManagementPage() {
             Showing <span className="text-gray-800 font-semibold">{users.length}</span> of{" "}
             <span className="text-gray-800 font-semibold">{meta.total}</span> users
           </span>
-          
+
           <div className="flex items-center gap-1.5">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={() => setPage(p => Math.max(p - 1, 1))} 
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setPage(p => Math.max(p - 1, 1))}
               disabled={page === 1}
               className="h-8 w-8 rounded-lg border-gray-200 hover:bg-gray-50 bg-white"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            
+
             <div className="flex items-center gap-1">
               {Array.from({ length: meta.totalPage }, (_, i) => i + 1).map((p) => (
                 <Button
@@ -443,8 +443,8 @@ export default function UserManagementPage() {
                   variant={p === page ? "default" : "outline"}
                   onClick={() => setPage(p)}
                   className={`h-8 min-w-[32px] px-2 rounded-lg text-xs font-semibold
-                    ${p === page 
-                      ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                    ${p === page
+                      ? 'bg-purple-600 hover:bg-purple-700 text-white'
                       : 'border-gray-200 hover:bg-gray-50 bg-white text-gray-600'
                     }
                   `}
@@ -454,10 +454,10 @@ export default function UserManagementPage() {
               ))}
             </div>
 
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={() => setPage(p => Math.min(p + 1, meta.totalPage))} 
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setPage(p => Math.min(p + 1, meta.totalPage))}
               disabled={page === meta.totalPage}
               className="h-8 w-8 rounded-lg border-gray-200 hover:bg-gray-50 bg-white"
             >

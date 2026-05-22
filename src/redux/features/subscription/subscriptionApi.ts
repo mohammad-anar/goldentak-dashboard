@@ -2,6 +2,10 @@ import { baseApi } from "../api/baseApi";
 
 export const subscriptionApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    getSubscriptionOverview: builder.query({
+      query: () => "/subscription/overview",
+      providesTags: ["Subscription"],
+    }),
     getPlans: builder.query({
       query: () => "/subscription/plans",
       providesTags: ["Subscription"],
@@ -34,6 +38,7 @@ export const subscriptionApi = baseApi.injectEndpoints({
 });
 
 export const { 
+  useGetSubscriptionOverviewQuery,
   useGetPlansQuery, 
   useCreateSubscriptionMutation,
   useCreatePlanMutation,
