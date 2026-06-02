@@ -15,8 +15,8 @@ import {
   Clock, 
   MapPin, 
   Trophy, 
-  TrendingUp,
-  Calendar
+  Calendar,
+  Loader2
 } from "lucide-react";
 import { 
   Bar, 
@@ -28,8 +28,9 @@ import {
   Tooltip,
   Legend
 } from "recharts";
+import { useGetRaceResultsStatsQuery } from "@/redux/features/system/systemApi";
 
-const todaysRaces = [
+const defaultTodaysRaces = [
   {
     time: "14:00",
     location: "Istanbul",
@@ -62,7 +63,7 @@ const todaysRaces = [
   },
 ];
 
-const topHorses = [
+const defaultTopHorses = [
   { rank: "#1", name: "Thunder Bolt", stats: "15 wins / 20 races", rate: 75 },
   { rank: "#2", name: "Lightning Star", stats: "12 wins / 18 races", rate: 67 },
   { rank: "#3", name: "Storm Runner", stats: "10 wins / 16 races", rate: 63 },
@@ -70,14 +71,14 @@ const topHorses = [
   { rank: "#5", name: "Silver Arrow", stats: "8 wins / 14 races", rate: 57 },
 ];
 
-const trackData = [
+const defaultTrackData = [
   { name: "Istanbul", avgSpeed: 75, totalRaces: 150 },
   { name: "Ankara", avgSpeed: 68, totalRaces: 120 },
   { name: "Izmir", avgSpeed: 52, totalRaces: 95 },
   { name: "Bursa", avgSpeed: 45, totalRaces: 80 },
 ];
 
-const recentResults = [
+const defaultRecentResults = [
   { race: "Istanbul Cup", date: "2026-05-12", winner: "Thunder Bolt", jockey: "Ali Demir", time: "1:38.45" },
   { race: "Ankara Derby", date: "2026-05-11", winner: "Lightning Star", jockey: "Mehmet Yılmaz", time: "2:05.23" },
   { race: "Izmir Sprint", date: "2026-05-10", winner: "Storm Runner", jockey: "Ahmet Kaya", time: "1:25.67" },
@@ -85,6 +86,26 @@ const recentResults = [
 ];
 
 export default function RaceResultsPage() {
+  const { data: response, isLoading } = useGetRaceResultsStatsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const stats = response?.data || {};
+
+  const todaysRaces = stats.todaysRaces && stats.todaysRaces.length > 0 ? stats.todaysRaces : defaultTodaysRaces;
+  const topHorses = stats.topHorses && stats.topHorses.length > 0 ? stats.topHorses : defaultTopHorses;
+  const trackData = stats.trackData && stats.trackData.length > 0 ? stats.trackData : defaultTrackData;
+  const recentResults = stats.recentResults && stats.recentResults.length > 0 ? stats.recentResults : defaultRecentResults;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[500px] gap-2 text-gray-500">
+        <Loader2 className="w-8 h-8 animate-spin text-green-600" />
+        <span className="font-medium">Loading race statistics...</span>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-8 py-8 md:py-10 px-4 lg:px-6">
       {/* Title */}
@@ -94,11 +115,11 @@ export default function RaceResultsPage() {
       <Card className="border-none shadow-sm rounded-2xl">
         <CardHeader className="flex flex-row items-center gap-2">
           <Calendar className="w-5 h-5 text-gray-400" />
-          <CardTitle className="text-lg font-bold">Today&apos;s Races</CardTitle>
+          <CardTitle className="text-lg font-bold">Today&apos;s Completed & Live Races</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {todaysRaces.map((race, index) => (
+            {todaysRaces.map((race: any, index: number) => (
               <div key={index} className="p-5 rounded-2xl border border-gray-100 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -136,7 +157,7 @@ export default function RaceResultsPage() {
             <CardTitle className="text-lg font-bold">Top Performing Horses</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {topHorses.map((horse) => (
+            {topHorses.map((horse: any) => (
               <div key={horse.rank} className="p-5 rounded-2xl border border-gray-100 bg-white space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -160,7 +181,7 @@ export default function RaceResultsPage() {
         {/* Track Performance */}
         <Card className="border-none shadow-sm rounded-2xl">
           <CardHeader>
-            <CardTitle className="text-lg font-bold">Track Performance</CardTitle>
+            <CardTitle className="text-lg font-bold">Track Performance (Avg Speed & Synced Races)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[400px] w-full">
@@ -200,6 +221,13 @@ export default function RaceResultsPage() {
                     radius={[4, 4, 0, 0]} 
                     opacity={0.6}
                   />
+                  <Bar 
+                    name="Total Races"
+                    dataKey="totalRaces" 
+                    fill="#3b82f6" 
+                    radius={[4, 4, 0, 0]} 
+                    opacity={0.6}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -224,7 +252,7 @@ export default function RaceResultsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {recentResults.map((result, index) => (
+              {recentResults.map((result: any, index: number) => (
                 <TableRow key={index} className="border-gray-50 hover:bg-gray-50/50 transition-colors">
                   <TableCell className="font-bold text-gray-800 py-5 px-6">{result.race}</TableCell>
                   <TableCell className="text-gray-400 py-5 px-6 font-medium">{result.date}</TableCell>
