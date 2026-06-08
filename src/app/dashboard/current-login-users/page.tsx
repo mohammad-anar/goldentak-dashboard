@@ -66,7 +66,7 @@ export default function CurrentLoginUsersPage() {
 
   // Determine user data with premium frontend-side mock fallback
   const apiUsers = responseData?.data || [];
-  const hasApiData = responseData?.data && responseData.data.length > 0;
+  const hasApiData = !!responseData;
   
   let users = apiUsers;
   let meta = responseData?.meta || { page: 1, limit: 10, total: 0, totalPage: 1 };
@@ -124,10 +124,10 @@ export default function CurrentLoginUsersPage() {
     setPage(1); // Reset to page 1 on limit change
   };
 
-  const handleAddDays = async (deviceId: string, days: number) => {
+  const handleAddSubscription = async (deviceId: string, plan: string, days: number) => {
     try {
-      await updateSubscription({ deviceId, plan: "PREMIUM", durationDays: days }).unwrap();
-      toast.success(`Successfully added ${days} days to subscription`);
+      await updateSubscription({ deviceId, plan, durationDays: days }).unwrap();
+      toast.success(`Successfully added ${plan} (${days} days) subscription`);
     } catch (err: any) {
       toast.error(err?.data?.message || "Failed to update subscription");
     }
@@ -306,18 +306,25 @@ export default function CurrentLoginUsersPage() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-[180px] rounded-xl p-1.5 shadow-xl border-none bg-white">
                               <DropdownMenuItem 
-                                onClick={() => handleAddDays(user.deviceId, 30)}
+                                onClick={() => handleAddSubscription(user.deviceId, "WEEKLY", 7)}
                                 className="flex items-center gap-2.5 py-2 px-3 rounded-lg cursor-pointer focus:bg-blue-50 text-xs font-medium text-gray-700"
                               >
                                 <Plus className="w-4.5 h-4.5 text-blue-600" />
-                                <span>Add 30 Days</span>
+                                <span>Add Weekly (7 Days)</span>
                               </DropdownMenuItem>
                               <DropdownMenuItem 
-                                onClick={() => handleAddDays(user.deviceId, 365)}
+                                onClick={() => handleAddSubscription(user.deviceId, "MONTHLY", 30)}
                                 className="flex items-center gap-2.5 py-2 px-3 rounded-lg cursor-pointer focus:bg-purple-50 text-xs font-medium text-gray-700"
                               >
-                                <TrendingUp className="w-4.5 h-4.5 text-purple-600" />
-                                <span>Add 1 Year</span>
+                                <Plus className="w-4.5 h-4.5 text-purple-600" />
+                                <span>Add Monthly (30 Days)</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => handleAddSubscription(user.deviceId, "YEARLY", 365)}
+                                className="flex items-center gap-2.5 py-2 px-3 rounded-lg cursor-pointer focus:bg-orange-50 text-xs font-medium text-gray-700"
+                              >
+                                <TrendingUp className="w-4.5 h-4.5 text-orange-600" />
+                                <span>Add Yearly (365 Days)</span>
                               </DropdownMenuItem>
                               <DropdownMenuItem className="flex items-center gap-2.5 py-2 px-3 rounded-lg cursor-pointer focus:bg-red-50 text-xs font-medium text-red-500">
                                 <Ban className="w-4.5 h-4.5 text-red-500" />

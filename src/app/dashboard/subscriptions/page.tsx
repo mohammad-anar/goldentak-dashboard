@@ -10,12 +10,14 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { 
   Crown, 
   Calendar, 
   XCircle, 
   Users,
-  Loader2
+  Loader2,
+  Plus
 } from "lucide-react";
 import { 
   Bar, 
@@ -27,6 +29,7 @@ import {
   Tooltip
 } from "recharts";
 import { useGetSubscriptionOverviewQuery } from "@/redux/features/subscription/subscriptionApi";
+import Link from "next/link";
 
 export default function SubscriptionsPage() {
   const { data: response, isLoading } = useGetSubscriptionOverviewQuery(undefined, {
@@ -86,8 +89,21 @@ export default function SubscriptionsPage() {
 
   return (
     <div className="flex flex-col gap-8 py-8 md:py-10 px-4 lg:px-6">
-      {/* Title */}
-      <h1 className="text-3xl font-bold text-gray-900">Subscription Overview</h1>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Subscription Overview</h1>
+          <p className="text-gray-500 mt-1">Monitor subscriber metrics and manually assign premium plans.</p>
+        </div>
+        <div>
+          <Link href="/dashboard/subscriptions/assign">
+            <Button className="bg-[#006841] hover:bg-[#006841]/90 text-white rounded-xl py-6 px-6 font-semibold flex items-center gap-2 shadow-md hover:shadow-lg transition-all duration-200">
+              <Plus className="w-5 h-5" />
+              Assign Premium User
+            </Button>
+          </Link>
+        </div>
+      </div>
 
       {/* Metrics Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -172,8 +188,7 @@ export default function SubscriptionsPage() {
               <TableHeader className="bg-gray-50/50">
                 <TableRow className="border-none">
                   <TableHead className="font-bold text-[12px] text-gray-400 py-4 px-6 uppercase">User</TableHead>
-                  <TableHead className="font-bold text-[12px] text-gray-400 py-4 px-6 uppercase">Plan</TableHead>
-                  <TableHead className="font-bold text-[12px] text-gray-400 py-4 px-6 uppercase">Amount</TableHead>
+                  <TableHead className="font-bold text-[12px] text-gray-400 py-4 px-6 uppercase">Type</TableHead>
                   <TableHead className="font-bold text-[12px] text-gray-400 py-4 px-6 uppercase">Start Date</TableHead>
                   <TableHead className="font-bold text-[12px] text-gray-400 py-4 px-6 uppercase">Expiry</TableHead>
                   <TableHead className="font-bold text-[12px] text-gray-400 py-4 px-6 uppercase">Status</TableHead>
@@ -183,8 +198,7 @@ export default function SubscriptionsPage() {
                 {overview.recentSubscriptions.map((sub: any, index: number) => (
                   <TableRow key={index} className="border-gray-50 hover:bg-gray-50/50 transition-colors">
                     <TableCell className="font-bold text-gray-800 py-5 px-6">{sub.user}</TableCell>
-                    <TableCell className="text-gray-500 py-5 px-6 font-medium">{sub.plan}</TableCell>
-                    <TableCell className="text-green-600 py-5 px-6 font-bold">{sub.amount}</TableCell>
+                    <TableCell className="text-purple-600 py-5 px-6 font-bold uppercase">{sub.plan}</TableCell>
                     <TableCell className="text-gray-400 py-5 px-6 font-medium">{sub.startDate}</TableCell>
                     <TableCell className="text-gray-400 py-5 px-6 font-medium">{sub.expiry}</TableCell>
                     <TableCell className="py-5 px-6">

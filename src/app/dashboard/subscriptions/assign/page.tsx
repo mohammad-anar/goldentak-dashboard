@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,51 +13,56 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { ArrowLeft, UserPlus } from "lucide-react";
-import { useGetPlansQuery, useCreateSubscriptionMutation } from "@/redux/features/subscription/subscriptionApi";
+import { useCreateSubscriptionMutation } from "@/redux/features/subscription/subscriptionApi";
 import { useGetUsersQuery } from "@/redux/features/auth/authApi";
 import { toast } from "sonner";
 import Link from "next/link";
 
+const subscriptionTypes = [
+  { value: "WEEKLY", label: "Weekly" },
+  { value: "MONTHLY", label: "Monthly" },
+  { value: "YEARLY", label: "Yearly" },
+];
+
 export default function AssignSubscriptionPage() {
   const router = useRouter();
-  const { data: plansData } = useGetPlansQuery({});
   const { data: usersData } = useGetUsersQuery({});
   const [assignSubscription, { isLoading }] = useCreateSubscriptionMutation();
   
   const [formData, setFormData] = useState({
     userId: "",
-    planId: "",
+    plan: "WEEKLY",
     startDate: new Date().toISOString().split('T')[0],
     endDate: ""
   });
 
-  const plans = plansData?.data || [];
   const users = usersData?.data || [];
 
-  const handlePlanChange = (planId: string) => {
-    const plan = plans.find((p: any) => p.id === planId);
-    if (plan) {
-      const start = new Date(formData.startDate);
-      const end = new Date(start);
-      if (plan.duration === "MONTHLY") {
-        end.setMonth(end.getMonth() + 1);
-      } else {
-        end.setFullYear(end.getFullYear() + 1);
-      }
-      setFormData({ 
-        ...formData, 
-        planId, 
-        endDate: end.toISOString().split('T')[0] 
-      });
-    } else {
-      setFormData({ ...formData, planId });
+  // Automatically calculate end date when start date or subscription type changes
+  useEffect(() => {
+    if (!formData.startDate) return;
+    const start = new Date(formData.startDate);
+    if (isNaN(start.getTime())) return;
+    
+    const end = new Date(start);
+    if (formData.plan === "WEEKLY") {
+      end.setDate(end.getDate() + 7);
+    } else if (formData.plan === "MONTHLY") {
+      end.setMonth(end.getMonth() + 1);
+    } else if (formData.plan === "YEARLY") {
+      end.setFullYear(end.getFullYear() + 1);
     }
-  };
+    
+    setFormData((prev) => ({ 
+      ...prev, 
+      endDate: end.toISOString().split('T')[0] 
+    }));
+  }, [formData.startDate, formData.plan]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.userId || !formData.planId || !formData.endDate) {
+    if (!formData.userId || !formData.plan || !formData.endDate) {
       toast.error("Please fill in all fields");
       return;
     }
@@ -108,15 +113,18 @@ export default function AssignSubscriptionPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Subscription Plan</Label>
-              <Select onValueChange={handlePlanChange}>
+              <Label>Subscription Type</Label>
+              <Select 
+                value={formData.plan} 
+                onValueChange={(val) => setFormData({ ...formData, plan: val })}
+              >
                 <SelectTrigger className="rounded-xl">
-                  <SelectValue placeholder="Choose a plan" />
+                  <SelectValue placeholder="Choose a type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {plans.map((plan: any) => (
-                    <SelectItem key={plan.id} value={plan.id}>
-                      {plan.name} (${plan.price})
+                  {subscriptionTypes.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

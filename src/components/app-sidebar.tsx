@@ -75,11 +75,6 @@ const navItems = [
     url: "/dashboard/race-results",
     icon: IconTrophy,
   },
-  {
-    title: "Subscription Plans",
-    url: "/dashboard/subscription-plan",
-    icon: IconCreditCard,
-  },
 ];
 
 
