@@ -11,6 +11,9 @@ import {
   IconApi,
   IconTrophy,
   IconLogout,
+  IconStar,
+  IconNews,
+  IconFileText,
 } from "@tabler/icons-react";
 
 import {
@@ -74,6 +77,21 @@ const navItems = [
     title: "Race Results",
     url: "/dashboard/race-results",
     icon: IconTrophy,
+  },
+  {
+    title: "Feedbacks & Ratings",
+    url: "/dashboard/ratings",
+    icon: IconStar,
+  },
+  {
+    title: "Newsletters",
+    url: "/dashboard/newsletters",
+    icon: IconNews,
+  },
+  {
+    title: "Legal Documents",
+    url: "/dashboard/legal",
+    icon: IconFileText,
   },
 ];
 

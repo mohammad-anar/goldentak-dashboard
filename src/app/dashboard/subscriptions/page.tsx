@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Table, 
@@ -32,6 +33,11 @@ import { useGetSubscriptionOverviewQuery } from "@/redux/features/subscription/s
 import Link from "next/link";
 
 export default function SubscriptionsPage() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const { data: response, isLoading } = useGetSubscriptionOverviewQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
@@ -78,7 +84,7 @@ export default function SubscriptionsPage() {
     },
   ];
 
-  if (isLoading) {
+  if (isLoading || !mounted) {
     return (
       <div className="flex items-center justify-center min-h-[500px]">
         <Loader2 className="w-8 h-8 animate-spin text-purple-600" />

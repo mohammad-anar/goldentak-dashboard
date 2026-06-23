@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { 
   Pie, 
   PieChart, 
@@ -19,6 +20,23 @@ interface SubscriptionStatusChartProps {
 }
 
 export function SubscriptionStatusChart({ data = [] }: SubscriptionStatusChartProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <Card className="border-none shadow-sm h-full">
+        <CardHeader>
+          <CardTitle className="text-lg font-bold">Subscription Status</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center">
+          <div className="h-[300px] w-full bg-gray-50/50 rounded-2xl animate-pulse" />
+        </CardContent>
+      </Card>
+    );
+  }
   const total = data.reduce((acc, curr) => acc + curr.value, 0);
   const freeItem = data.find((d) => d.name === "Free");
   const paidItem = data.find((d) => d.name === "Paid");

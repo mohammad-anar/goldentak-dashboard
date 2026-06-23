@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Globe, Users, Loader2 } from "lucide-react";
@@ -14,11 +15,16 @@ import {
 } from "recharts";
 
 export default function LanguageManagementPage() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const { data: response, isLoading } = useGetLanguageStatsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
 
-  if (isLoading) {
+  if (isLoading || !mounted) {
     return (
       <div className="flex items-center justify-center min-h-[500px]">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />

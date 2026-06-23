@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { 
   Bar, 
   BarChart, 
@@ -21,6 +22,23 @@ interface UserActivityChartProps {
 }
 
 export function UserActivityChart({ data = [] }: UserActivityChartProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <Card className="border-none shadow-sm h-full">
+        <CardHeader>
+          <CardTitle className="text-lg font-bold">User Activity</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px] w-full bg-gray-50/50 rounded-2xl animate-pulse" />
+        </CardContent>
+      </Card>
+    );
+  }
   return (
     <Card className="border-none shadow-sm h-full">
       <CardHeader>

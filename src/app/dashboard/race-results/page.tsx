@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -86,6 +87,11 @@ const defaultRecentResults = [
 ];
 
 export default function RaceResultsPage() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const { data: response, isLoading } = useGetRaceResultsStatsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
@@ -97,7 +103,7 @@ export default function RaceResultsPage() {
   const trackData = stats.trackData && stats.trackData.length > 0 ? stats.trackData : defaultTrackData;
   const recentResults = stats.recentResults && stats.recentResults.length > 0 ? stats.recentResults : defaultRecentResults;
 
-  if (isLoading) {
+  if (isLoading || !mounted) {
     return (
       <div className="flex items-center justify-center min-h-[500px] gap-2 text-gray-500">
         <Loader2 className="w-8 h-8 animate-spin text-green-600" />
